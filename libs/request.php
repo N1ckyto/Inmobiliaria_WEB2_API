@@ -9,7 +9,7 @@ class Request
     {
         try {
             # file_get_contents('php://input') lee el body de la request
-            $this->body = json_decode(file_get_contents('php://input'), true);
+            $this->body = json_decode(file_get_contents('php://input'));
         } catch (Exception $e) {
             $this->body = null;
         }

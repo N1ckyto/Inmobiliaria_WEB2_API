@@ -12,11 +12,12 @@ $router = new Router();
 #                 endpoint        verbo      controller              metodo
 $router->addRoute('propiedades',            'GET',     'PropertyApiController',   'getPropertyAll');
 $router->addRoute('propiedades/:id',            'GET',     'PropertyApiController',   'getProperty');
+$router->addRoute('propiedades/:id',            'PUT',     'PropertyApiController',   'update');
+
 $router->addRoute('propietarios',            'GET',     'OwnerApiController',   'getOwnerAll');
 $router->addRoute('propietarios/:id',            'GET',     'OwnerApiController',   'getOwner');
-//$router->addRoute('tareas/:id',            'DELETE',  'TaskApiController',   'delete');
+$router->addRoute('propietarios/:id',            'PUT',     'OwnerApiController',   'update');
 //$router->addRoute('tareas',                'POST',    'TaskApiController',   'create');
-//$router->addRoute('tareas/:id',            'PUT',     'TaskApiController',   'update');
 //$router->addRoute('tareas/:id/finalizada', 'PUT',     'TaskApiController',   'setFinalize');
 
 //$router->addRoute('usuarios/token',            'GET',     'UserApiController',   'getToken');

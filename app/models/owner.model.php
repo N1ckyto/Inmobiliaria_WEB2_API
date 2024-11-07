@@ -26,8 +26,7 @@ class OwnerModel
                     break;
             }
         }
-
-        // Consulta para obtener todos los propietaros
+        
         $query = $this->db->prepare($sql);
         $query->execute();
 

@@ -11,9 +11,16 @@ class PropertyModel
     }
 
     // Obtener todas las propiedades
-    public function getProperties($orderBy = false)
+    public function getProperties($modalidad = null, $orderBy = false)
     {
         $sql = 'SELECT * FROM propiedades';
+
+        if ($modalidad != null) {
+            if ($modalidad == 'venta')
+                $sql .= ' WHERE modalidad = "venta"';
+            else
+                $sql .= ' WHERE modalidad = "alquiler"';
+        }
 
         if ($orderBy) {
             switch ($orderBy) { //"aca es depende el case es lo que queres ordenar"
@@ -26,9 +33,6 @@ class PropertyModel
                 case 'm2':
                     $sql .= ' ORDER BY m2';
                     break;
-                case 'modalidad':
-                    $sql .= ' ORDER BY modalidad';
-                    break;
                 case 'id_propietario':
                     $sql .= ' ORDER BY id_propietario';
                     break;
@@ -38,7 +42,7 @@ class PropertyModel
                 case 'precio_flex':
                     $sql .= ' ORDER BY precio_flex';
                     break;
-                // no pongo el case de imagenes por que no tiene sentido que se ordene. :)
+                    // no pongo el case de imagenes por que no tiene sentido que se ordene. :)
             }
         }
 
@@ -121,7 +125,7 @@ class PropertyModel
     }
 
     // Actualizar una propiedad (aquí puedes ajustar los campos que desees actualizar)
-    public function updateProperty($ubicacion, $m2, $modalidad, $id_propietario, $precio_inicial, $precio_flex, $imagen, $id)
+    public function updateProperty($id, $ubicacion, $m2, $modalidad, $id_propietario, $precio_inicial, $precio_flex, $imagen)
     {
         // Actualiza una propiedad con los datos proporcionados
 

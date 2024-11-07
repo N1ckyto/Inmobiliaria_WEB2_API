@@ -13,11 +13,6 @@ class OwnerApiController
         $this->view = new JSONView();
     }
 
-    /* public function showHome()
-    {
-        return $this->view->showHome();
-    } */
-
     public function getOwnerAll($req, $res)
     {
         $orderBy = false;
@@ -26,25 +21,49 @@ class OwnerApiController
             $orderBy = $req->query->orderBy;
         }
 
-        // Obtiene los propietarios de la DB
         $owners = $this->model->getOwners($orderBy);
 
-        // Envía los propietarios a la vista
         return $this->view->response($owners);
     }
 
     // /api/propietarios/:id
     public function getOwner($req, $res)
     {
-        // obtengo el id del propietario desde la ruta
+
         $id = $req->params->id;
         $owner = $this->model->getOwner($id);
+
         if (!$owner) {
             return $this->view->response("No existe el propietario con el id=$id", 404);
         }
+
         return $this->view->response($owner);
     }
 
+    public function update($req, $res)
+    {
+        $id = $req->params->id;
+
+        $owner = $this->model->getOwner($id);
+
+        if (!$owner) {
+            return $this->view->response("El propietario con el id=$id no existe", 404);
+        }
+
+        if (empty($req->body->nombre) || empty($req->body->apellido) || empty($req->body->imagen)) {
+            return $this->view->response('Faltan completar datos', 400);
+        }
+
+        $nombre = $req->body->nombre;
+        $apellido = $req->body->apellido;
+        $imagen = $req->body->imagen;
+
+        $this->model->updateOwner($id, $nombre, $apellido, $imagen);
+
+        $owner = $this->model->getOwner($id);
+        $this->view->response($owner, 200);
+    }
+    
     /* public function addOwners()
     {
         // Obtiene las propiedades de la DB

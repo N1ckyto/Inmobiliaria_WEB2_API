@@ -13,40 +13,66 @@ class PropertyApiController
         $this->view = new JSONView();
     }
 
-    /* public function showHome()
-    {
-       return $this->view->showHome();
-    } */
-
     public function getPropertyAll($req, $res)
     {
+        $modalidad = null;
+
+        if (isset($req->query->modalidad)) {
+            $modalidad = $req->query->modalidad;
+        }
+
         $orderBy = false;
 
         if (isset($req->query->orderBy)) {
             $orderBy = $req->query->orderBy;
         }
 
-        // Obtiene las propiedades de la DB
-        $properties = $this->model->getProperties($orderBy);
+        $properties = $this->model->getProperties($modalidad, $orderBy);
 
-        // Envía las propiedades a la vista
         return $this->view->response($properties);
     }
 
     // /api/propiedades/:id
     public function getProperty($req, $res)
     {
-        // obtengo el id de la propiedad desde la ruta
+
         $id = $req->params->id;
-        // obtengo la propiedad de la DB
+
         $properties = $this->model->getProperty($id);
 
         if (!$properties) {
             return $this->view->response("La propiedad con el id=$id no existe", 404);
         }
 
-        // mando la propiedad a la vista
         return $this->view->response($properties);
+    }
+
+    public function update($req, $res)
+    {
+        $id = $req->params->id;
+
+        $properties = $this->model->getProperty($id);
+
+        if (!$properties) {
+            return $this->view->response("La tarea con el id=$id no existe", 404);
+        }
+
+        if (empty($req->body->ubicacion) || empty($req->body->m2) || empty($req->body->modalidad) || empty($req->body->id_propietario) || empty($req->body->precio_inicial) || empty($req->body->precio_flex) || empty($req->body->imagen)) {
+            return $this->view->response('Faltan completar datos', 400);
+        }
+
+        $ubicacion = $req->body->ubicacion;
+        $m2 = $req->body->m2;
+        $modalidad = $req->body->modalidad;
+        $id_propietario = $req->body->id_propietario;
+        $precio_inicial = $req->body->precio_inicial;
+        $precio_flex = $req->body->precio_flex;
+        $imagen = $req->body->imagen;
+
+        $this->model->updateProperty($id, $ubicacion, $m2, $modalidad, $id_propietario, $precio_inicial, $precio_flex, $imagen);
+
+        $properties = $this->model->getProperty($id);
+        $this->view->response($properties, 200);
     }
 
     /* public function addProperty()
