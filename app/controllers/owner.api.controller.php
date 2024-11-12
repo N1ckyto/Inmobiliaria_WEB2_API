@@ -15,15 +15,21 @@ class OwnerApiController
 
     public function getOwnerAll($req, $res)
     {
+        $order = null;
+
+        if (isset($req->query->order)) {
+            $order = $req->query->order;
+        }
+
         $orderBy = false;
 
         if (isset($req->query->orderBy)) {
             $orderBy = $req->query->orderBy;
         }
 
-        $owners = $this->model->getOwners($orderBy);
+        $owners = $this->model->getOwners($orderBy, $order);
 
-        return $this->view->response($owners);
+        return $this->view->response($owners, 200);
     }
 
     // /api/propietarios/:id
@@ -37,7 +43,7 @@ class OwnerApiController
             return $this->view->response("No existe el propietario con el id=$id", 404);
         }
 
-        return $this->view->response($owner);
+        return $this->view->response($owner, 200);
     }
 
     public function update($req, $res)
@@ -63,7 +69,7 @@ class OwnerApiController
         $owner = $this->model->getOwner($id);
         $this->view->response($owner, 200);
     }
-    
+
     /* public function addOwners()
     {
         // Obtiene las propiedades de la DB

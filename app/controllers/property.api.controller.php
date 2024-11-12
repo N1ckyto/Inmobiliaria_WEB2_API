@@ -15,10 +15,10 @@ class PropertyApiController
 
     public function getPropertyAll($req, $res)
     {
-        $modalidad = null;
+        $order = null;
 
-        if (isset($req->query->modalidad)) {
-            $modalidad = $req->query->modalidad;
+        if (isset($req->query->order)) {
+            $order = $req->query->order;
         }
 
         $orderBy = false;
@@ -27,9 +27,9 @@ class PropertyApiController
             $orderBy = $req->query->orderBy;
         }
 
-        $properties = $this->model->getProperties($modalidad, $orderBy);
+        $properties = $this->model->getProperties($orderBy, $order);
 
-        return $this->view->response($properties);
+        return $this->view->response($properties, 200);
     }
 
     // /api/propiedades/:id
@@ -44,7 +44,7 @@ class PropertyApiController
             return $this->view->response("La propiedad con el id=$id no existe", 404);
         }
 
-        return $this->view->response($properties);
+        return $this->view->response($properties, 200);
     }
 
     public function update($req, $res)

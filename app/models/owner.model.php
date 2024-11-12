@@ -9,24 +9,32 @@ class OwnerModel
         $this->db = new PDO('mysql:host=localhost;dbname=inmobiliaria_db;charset=utf8', 'root', '');
     }
 
-    public function getOwners($orderBy = false)
+    public function getOwners($orderBy = false, $order = 'ASC')
     {
         $sql = 'SELECT * FROM propietarios';
 
         if ($orderBy) {
+            $sql .= ' ORDER BY ';
             switch ($orderBy) { //"aca es depende el case es lo que queres ordenar"
                 case 'id':
-                    $sql .= ' ORDER BY id';
+                    $sql .= ' id';
                     break;
                 case 'nombre':
-                    $sql .= ' ORDER BY nombre';
+                    $sql .= ' nombre';
                     break;
                 case 'apellido':
-                    $sql .= ' ORDER BY apellido';
+                    $sql .= ' apellido';
                     break;
             }
         }
-        
+
+        $order = strtoupper($order); //strtoupper convierte a mayuscula asc o desc
+        if ($order === 'DESC') {
+            $sql .= ' DESC';
+        } else {
+            $sql .= ' ASC';
+        }
+
         $query = $this->db->prepare($sql);
         $query->execute();
 
