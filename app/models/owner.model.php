@@ -28,11 +28,13 @@ class OwnerModel
             }
         }
 
-        $order = strtoupper($order); //strtoupper convierte a mayuscula asc o desc
-        if ($order === 'DESC') {
-            $sql .= ' DESC';
-        } else {
-            $sql .= ' ASC';
+        if ($order) {
+            $order = strtoupper($order); //strtoupper convierte a mayuscula asc o desc
+            if ($order === 'DESC') {
+                $sql .= ' DESC';
+            } else {
+                $sql .= ' ASC';
+            }
         }
 
         $query = $this->db->prepare($sql);

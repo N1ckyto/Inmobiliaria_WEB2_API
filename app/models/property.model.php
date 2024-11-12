@@ -42,11 +42,13 @@ class PropertyModel
                     // no pongo el case de imagenes por que no tiene sentido que se ordene. :)
             }
         }
-        $order = strtoupper($order); //strtoupper convierte a mayuscula asc o desc
-        if ($order === 'DESC') {
-            $sql .= ' DESC';
-        } else {
-            $sql .= ' ASC';
+        if ($order) {
+            $order = strtoupper($order); //strtoupper convierte a mayuscula asc o desc
+            if ($order === 'DESC') {
+                $sql .= ' DESC';
+            } else {
+                $sql .= ' ASC';
+            }
         }
 
         // Consulta para obtener todas las propiedades
