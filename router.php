@@ -4,19 +4,23 @@ require_once 'libs/router.php';
 
 require_once 'app/controllers/property.api.controller.php';
 require_once 'app/controllers/owner.api.controller.php';
+require_once 'app/middleware/jwt.auth.middleware.php';
 //require_once 'app/middlewares/jwt.auth.middleware.php';
 $router = new Router();
 
-//$router->addMiddleware(new JWTAuthMiddleware());
+$router->addMiddleware(new JWTAuthMiddleware());
 
 #                 endpoint        verbo      controller              metodo
 $router->addRoute('propiedades',            'GET',     'PropertyApiController',   'getPropertyAll');
+$router->addRoute('propiedades',            'POST',     'PropertyApiController',   'addProperty');
 $router->addRoute('propiedades/:id',            'GET',     'PropertyApiController',   'getProperty');
 $router->addRoute('propiedades/:id',            'PUT',     'PropertyApiController',   'update');
 
 $router->addRoute('propietarios',            'GET',     'OwnerApiController',   'getOwnerAll');
+$router->addRoute('propietarios',            'POST',     'OwnerApiController',   'addOwner');
 $router->addRoute('propietarios/:id',            'GET',     'OwnerApiController',   'getOwner');
 $router->addRoute('propietarios/:id',            'PUT',     'OwnerApiController',   'update');
+
 //$router->addRoute('tareas',                'POST',    'TaskApiController',   'create');
 //$router->addRoute('tareas/:id/finalizada', 'PUT',     'TaskApiController',   'setFinalize');
 

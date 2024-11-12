@@ -11,7 +11,7 @@ class PropertyModel
     }
 
     // Obtener todas las propiedades
-    public function getProperties($modalidad = null, $orderBy = false)
+    public function getProperties($modalidad = null, $orderBy = false, $page = 1, $pageSize = 10)
     {
         $sql = 'SELECT * FROM propiedades';
 
@@ -46,9 +46,13 @@ class PropertyModel
             }
         }
 
+        $pageSize = intval($pageSize);
+        $offset = intval(($page - 1) * $pageSize);
+        $sql .= ' LIMIT ? OFFSET ?';
+
         // Consulta para obtener todas las propiedades
         $query = $this->db->prepare($sql);
-        $query->execute();
+        $query->execute([$pageSize, $offset]);
 
         // Obtiene las propiedades en un arreglo de objetos
         $properties = $query->fetchAll(PDO::FETCH_OBJ);

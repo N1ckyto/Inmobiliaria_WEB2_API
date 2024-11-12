@@ -1,6 +1,6 @@
 <?php
-require_once './app/models/owner.model.php';
-require_once './app/views/json.view.php';
+require_once '../views/json.view.php';
+require_once '../models/owner.model.php';
 
 class OwnerApiController
 {
@@ -9,19 +9,24 @@ class OwnerApiController
 
     public function __construct()
     {
-        $this->model = new OwnerModel(); // Adaptado a OwnerModel
+        $this->model = new OwnerModel(); 
         $this->view = new JSONView();
     }
 
     public function getOwnerAll($req, $res)
     {
         $orderBy = false;
+        $filter = false; // filtra por cantidad de propiedades
 
         if (isset($req->query->orderBy)) {
             $orderBy = $req->query->orderBy;
         }
 
-        $owners = $this->model->getOwners($orderBy);
+        if (isset($req->query->filter)) {
+            $filter = $req->query->filter;
+        }
+
+        $owners = $this->model->getOwners($orderBy, $filter);
 
         return $this->view->response($owners);
     }
@@ -64,39 +69,34 @@ class OwnerApiController
         $this->view->response($owner, 200);
     }
     
-    /* public function addOwners()
+
+    public function addOwner($req, $res)
     {
-        // Obtiene las propiedades de la DB
-        $owners = $this->model->getOwners();
-
-        // Envía las propiedades a la vista
-        return $this->view->addOwners($owners);
-    }
-    public function addOwner()
-    {
-        if (!isset($_POST['nombre']) || empty($_POST['nombre'])) {
-            return $this->view->showError('Falta completar el nombre');
+      
+        if (!isset($req->body['nombre']) || empty($req->body['nombre'])) {
+            return $res->send($this->view->showError('Falta completar el nombre'));
         }
-        if (!isset($_POST['apellido']) || empty($_POST['apellido'])) {
-            return $this->view->showError('Falta completar el apellido');
+        if (!isset($req->body['apellido']) || empty($req->body['apellido'])) {
+            return $res->send($this->view->showError('Falta completar el apellido'));
         }
-        if (!isset($_POST['imagen']) || empty($_POST['imagen'])) {
-            return $this->view->showError('Falta completar la imagen');
+        if (!isset($req->body['imagen']) || empty($req->body['imagen'])) {
+            return $res->send($this->view->showError('Falta completar la imagen'));
         }
+    
 
-
-        $nombre = $_POST['nombre'];
-        $apellido = $_POST['apellido'];
-        $imagen = $_POST['imagen'];
-
+        $nombre = $req->body['nombre'];
+        $apellido = $req->body['apellido'];
+        $imagen = $req->body['imagen'];
+    
 
         $id = $this->model->insertOwner($nombre, $apellido, $imagen);
-
+    
 
         $owners = $this->model->getOwners();
-
-        return $this->view->showOwners($owners);
+    
+        return $res->send($this->view->showOwners($owners));
     }
+    
 
     public function viewOwner($id)
     {

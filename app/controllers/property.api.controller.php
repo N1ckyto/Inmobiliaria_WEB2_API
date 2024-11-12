@@ -16,6 +16,17 @@ class PropertyApiController
     public function getPropertyAll($req, $res)
     {
         $modalidad = null;
+        $page = null;
+        $pageSize = null;
+
+    
+        if (isset($req->query->page) && filter_var($req->query->page, FILTER_VALIDATE_INT) !== false) {
+            $page = $req->query->page;
+        }
+        
+        if (isset($req->query->pageSize) && filter_var($req->query->pageSize, FILTER_VALIDATE_INT) !== false) {
+            $pageSize = $req->query->pageSize;
+        }
 
         if (isset($req->query->modalidad)) {
             $modalidad = $req->query->modalidad;
@@ -27,7 +38,7 @@ class PropertyApiController
             $orderBy = $req->query->orderBy;
         }
 
-        $properties = $this->model->getProperties($modalidad, $orderBy);
+        $properties = $this->model->getProperties($modalidad, $orderBy, $page, $pageSize);
 
         return $this->view->response($properties);
     }
@@ -75,49 +86,51 @@ class PropertyApiController
         $this->view->response($properties, 200);
     }
 
-    /* public function addProperty()
-    {
-        // Valida que los campos obligatorios estén presentes
-        if (!isset($_POST['ubicacion']) || empty($_POST['ubicacion'])) {
-            return $this->view->showError('Falta completar la ubicación');
-        }
-        if (!isset($_POST['m2']) || empty($_POST['m2'])) {
-            return $this->view->showError('Falta completar los metros cuadrados');
-        }
-        if (!isset($_POST['modalidad']) || empty($_POST['modalidad'])) {
-            return $this->view->showError('Falta completar la modalidad');
-        }
-        if (!isset($_POST['precio_inicial']) || empty($_POST['precio_inicial'])) {
-            return $this->view->showError('Falta completar el precio inicial');
-        }
-        if (!isset($_POST['precio_flexible'])) {
-            return $this->view->showError('Falta completar si el precio es flexible');
-        }
-        if (!isset($_POST['propietario']) || empty($_POST['propietario'])) {
-            return $this->view->showError('Falta completar quien es el propietario');
-        }
-
-        // Opcional: validación para imagen
-        if (!isset($_POST['imagen']) || empty($_POST['imagen'])) {
-            return $this->view->showError('Falta completar la URL de la imagen');
-        }
-
-        // Obtiene los datos del formulario
-        $ubicacion = $_POST['ubicacion'];
-        $m2 = $_POST['m2'];
-        $modalidad = $_POST['modalidad'];
-        $precio_inicial = $_POST['precio_inicial'];
-        $precio_flex = isset($_POST['precio_flexible']) ? $_POST['precio_flexible'] : 0;
-        $id_propietario = $_POST['propietario'];
-        $imagen = $_POST['imagen']; // Nueva línea para agregar la imagen
-
-        // Inserta la nueva propiedad en la base de datos
-        $id = $this->model->insertProperty($ubicacion, $m2, $modalidad, $id_propietario, $precio_inicial, $precio_flex, $imagen);
-
-        $properties = $this->model->getProperties();
-        $owners = $this->model->getOwners();
-        return $this->view->addProperties($properties, $owners);
+    public function addProperty($req, $res)
+{
+    if (!isset($req->body['ubicacion']) || empty($req->body['ubicacion'])) {
+        return $res->send($this->view->showError('Falta completar la ubicación'));
     }
+    if (!isset($req->body['m2']) || empty($req->body['m2'])) {
+        return $res->send($this->view->showError('Falta completar los metros cuadrados'));
+    }
+    if (!isset($req->body['modalidad']) || empty($req->body['modalidad'])) {
+        return $res->send($this->view->showError('Falta completar la modalidad'));
+    }
+    if (!isset($req->body['precio_inicial']) || empty($req->body['precio_inicial'])) {
+        return $res->send($this->view->showError('Falta completar el precio inicial'));
+    }
+    if (!isset($req->body['precio_flexible'])) {
+        return $res->send($this->view->showError('Falta completar si el precio es flexible'));
+    }
+    if (!isset($req->body['propietario']) || empty($req->body['propietario'])) {
+        return $res->send($this->view->showError('Falta completar quien es el propietario'));
+    }
+
+
+    if (!isset($req->body['imagen']) || empty($req->body['imagen'])) {
+        return $res->send($this->view->showError('Falta completar la URL de la imagen'));
+    }
+
+
+    $ubicacion = $req->body['ubicacion'];
+    $m2 = $req->body['m2'];
+    $modalidad = $req->body['modalidad'];
+    $precio_inicial = $req->body['precio_inicial'];
+    $precio_flex = isset($req->body['precio_flexible']) ? $req->body['precio_flexible'] : 0;
+    $id_propietario = $req->body['propietario'];
+    $imagen = $req->body['imagen'];
+
+
+    $id = $this->model->insertProperty($ubicacion, $m2, $modalidad, $id_propietario, $precio_inicial, $precio_flex, $imagen);
+
+    $properties = $this->model->getProperties();
+    $owners = $this->model->getOwners();
+
+    return $res->send($this->view->addProperties($properties, $owners));
+}
+
+
 
     public function showDetails($id)
     {
@@ -193,5 +206,5 @@ class PropertyApiController
         $this->model->deleteProperty($id);
 
         header('Location: ' . BASE_URL);
-    } */
+    } 
 }
