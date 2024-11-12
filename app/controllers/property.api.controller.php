@@ -19,17 +19,8 @@ class PropertyApiController
         $page = null;
         $pageSize = null;
 
-    
-        if (isset($req->query->page) && filter_var($req->query->page, FILTER_VALIDATE_INT) !== false) {
-            $page = $req->query->page;
-        }
-        
-        if (isset($req->query->pageSize) && filter_var($req->query->pageSize, FILTER_VALIDATE_INT) !== false) {
-            $pageSize = $req->query->pageSize;
-        }
-
-        if (isset($req->query->modalidad)) {
-            $modalidad = $req->query->modalidad;
+        if (isset($req->query->order)) {
+            $order = $req->query->order;
         }
 
         $orderBy = false;
@@ -38,9 +29,9 @@ class PropertyApiController
             $orderBy = $req->query->orderBy;
         }
 
-        $properties = $this->model->getProperties($modalidad, $orderBy, $page, $pageSize);
+        $properties = $this->model->getProperties($order, $orderBy, $page, $pageSize);
 
-        return $this->view->response($properties);
+        return $this->view->response($properties, 200);
     }
 
     // /api/propiedades/:id
@@ -55,7 +46,7 @@ class PropertyApiController
             return $this->view->response("La propiedad con el id=$id no existe", 404);
         }
 
-        return $this->view->response($properties);
+        return $this->view->response($properties, 200);
     }
 
     public function update($req, $res)

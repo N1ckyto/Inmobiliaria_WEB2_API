@@ -11,38 +11,43 @@ class PropertyModel
     }
 
     // Obtener todas las propiedades
-    public function getProperties($modalidad = null, $orderBy = false, $page = 1, $pageSize = 10)
+    public function getProperties($orderBy = false, $order = 'ASC', $page = 1, $pageSize = 10)
     {
         $sql = 'SELECT * FROM propiedades';
 
-        if ($modalidad != null) {
-            if ($modalidad == 'venta')
-                $sql .= ' WHERE modalidad = "venta"';
-            else
-                $sql .= ' WHERE modalidad = "alquiler"';
-        }
-
         if ($orderBy) {
+            $sql .= ' ORDER BY ';
             switch ($orderBy) { //"aca es depende el case es lo que queres ordenar"
                 case 'id':
-                    $sql .= ' ORDER BY id';
+                    $sql .= ' id';
                     break;
                 case 'ubicacion':
-                    $sql .= ' ORDER BY ubicacion';
+                    $sql .= ' ubicacion';
                     break;
                 case 'm2':
-                    $sql .= ' ORDER BY m2';
+                    $sql .= ' m2';
+                    break;
+                case 'modalidad':
+                    $sql .= ' modalidad';
                     break;
                 case 'id_propietario':
-                    $sql .= ' ORDER BY id_propietario';
+                    $sql .= ' id_propietario';
                     break;
                 case 'precio_inicial':
-                    $sql .= ' ORDER BY precio_inicial';
+                    $sql .= ' precio_inicial';
                     break;
                 case 'precio_flex':
-                    $sql .= ' ORDER BY precio_flex';
+                    $sql .= ' precio_flex';
                     break;
                     // no pongo el case de imagenes por que no tiene sentido que se ordene. :)
+            }
+        }
+        if ($order) {
+            $order = strtoupper($order); //strtoupper convierte a mayuscula asc o desc
+            if ($order === 'DESC') {
+                $sql .= ' DESC';
+            } else {
+                $sql .= ' ASC';
             }
         }
 

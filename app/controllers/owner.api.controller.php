@@ -15,6 +15,12 @@ class OwnerApiController
 
     public function getOwnerAll($req, $res)
     {
+        $order = null;
+
+        if (isset($req->query->order)) {
+            $order = $req->query->order;
+        }
+
         $orderBy = false;
         $filter = false; // filtra por cantidad de propiedades
 
@@ -22,13 +28,9 @@ class OwnerApiController
             $orderBy = $req->query->orderBy;
         }
 
-        if (isset($req->query->filter)) {
-            $filter = $req->query->filter;
-        }
+        $owners = $this->model->getOwners($orderBy, $order);
 
-        $owners = $this->model->getOwners($orderBy, $filter);
-
-        return $this->view->response($owners);
+        return $this->view->response($owners, 200);
     }
 
     // /api/propietarios/:id
@@ -42,7 +44,7 @@ class OwnerApiController
             return $this->view->response("No existe el propietario con el id=$id", 404);
         }
 
-        return $this->view->response($owner);
+        return $this->view->response($owner, 200);
     }
 
     public function update($req, $res)
@@ -75,6 +77,19 @@ class OwnerApiController
       
         if (!isset($req->body['nombre']) || empty($req->body['nombre'])) {
             return $res->send($this->view->showError('Falta completar el nombre'));
+
+    /* public function addOwners()
+    {
+        // Obtiene las propiedades de la DB
+        $owners = $this->model->getOwners();
+
+        // Envía las propiedades a la vista
+        return $this->view->addOwners($owners);
+    }
+    public function addOwner()
+    {
+        if (!isset($_POST['nombre']) || empty($_POST['nombre'])) {
+            return $this->view->showError('Falta completar el nombre');
         }
         if (!isset($req->body['apellido']) || empty($req->body['apellido'])) {
             return $res->send($this->view->showError('Falta completar el apellido'));

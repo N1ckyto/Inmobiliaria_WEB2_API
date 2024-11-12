@@ -9,7 +9,7 @@ class OwnerModel
         $this->db = new PDO('mysql:host=localhost;dbname=inmobiliaria_db;charset=utf8', 'root', '');
     }
 
-    public function getOwners($orderBy = false, $filter = false)
+    public function getOwners($orderBy = false,$order = 'ASC', $filter = false)
     {
         $sql = 'SELECT p.id AS propietario_id, p.nombre, p.apellido, COUNT(pr.id) AS numero_de_propiedades
                 FROM propietarios p
@@ -19,21 +19,21 @@ class OwnerModel
         
 
         if ($orderBy) {
+            $sql .= ' ORDER BY ';
             switch ($orderBy) { //"aca es depende el case es lo que queres ordenar"
                 case 'id':
-                    $sql .= ' ORDER BY id';
+                    $sql .= ' id';
                     break;
                 case 'nombre':
-                    $sql .= ' ORDER BY nombre';
+                    $sql .= ' nombre';
                     break;
                 case 'apellido':
-                    $sql .= ' ORDER BY apellido';
+                    $sql .= ' apellido';
                     break;
                 case 'propiedades':
                     $sql .= ' ORDER BY numero_de_propiedades';
             }
         }
-
         
         $query = $this->db->prepare($sql);
         $query->execute([$filter ? $filter : 0]);
