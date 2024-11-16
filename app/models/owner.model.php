@@ -9,34 +9,29 @@ class OwnerModel
         $this->db = new PDO('mysql:host=localhost;dbname=inmobiliaria_db;charset=utf8', 'root', '');
     }
 
-    public function getOwners($orderBy = false,$order = 'ASC', $filter = false)
+    public function getOwners($orderBy = false, $order = 'ASC', $filter = false) // falta hacer que funcione el filtro
     {
-        $sql = 'SELECT p.id AS propietario_id, p.nombre, p.apellido, COUNT(pr.id) AS numero_de_propiedades
-                FROM propietarios p
-                LEFT JOIN propiedades pr ON p.id = pr.id_propietario
-                GROUP BY p.id, p.nombre, p.apellido
-                HAVING COUNT(pr.id) >= ?';
-        
+        $campos_validos = ['id', 'nombre', 'apellido']; // creo un arreglo con los datos validos
 
-        if ($orderBy) {
-            $sql .= ' ORDER BY ';
-            switch ($orderBy) { //"aca es depende el case es lo que queres ordenar"
-                case 'id':
-                    $sql .= ' id';
-                    break;
-                case 'nombre':
-                    $sql .= ' nombre';
-                    break;
-                case 'apellido':
-                    $sql .= ' apellido';
-                    break;
-                case 'propiedades':
-                    $sql .= ' ORDER BY numero_de_propiedades';
+        $sql = 'SELECT * FROM propietarios';
+
+        if (in_array($orderBy, $campos_validos)) {
+            $sql .= ' ORDER BY ' . $orderBy;
+        }
+
+        if ($order) {
+            $order = strtoupper($order); //strtoupper convierte a mayuscula asc o desc
+            if ($order === 'DESC') {
+                $sql .= ' DESC';
+            } else {
+                $sql .= ' ASC';
             }
         }
-        
+
         $query = $this->db->prepare($sql);
-        $query->execute([$filter ? $filter : 0]);
+        $query->execute();
+
+        // Obtiene los propietarios en un arreglo de objetos
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
 

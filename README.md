@@ -96,6 +96,20 @@ Este proyecto consiste en una base de datos para una inmobiliaria. El objetivo e
 
 ---
 
+- **POST** `.../api/propiedades`  
+  Agrega una propiedad a la base de datos. La información a modificar se envía en el cuerpo de la solicitud (en formato JSON).
+
+  - **Campos modificables**:
+    - `ubicacion`
+    - `m2`
+    - `modalidad`
+    - `id_propietario`
+    - `precio_inicial`
+    - `precio_flex`
+    - `imagen`
+
+---
+
 ### Propietarios
 
 - **GET** `.../api/propietarios`  
@@ -147,5 +161,13 @@ propietarios
     - `imagen`
 
 ---
+
+- **POST** `.../api/propietarios`  
+  Agrega un propietario a la base de datos. La información a modificar se envía en el cuerpo de la solicitud (en formato JSON).
+
+  - **Campos modificables**:
+    - `nombre`
+    - `apellido`
+    - `imagen`
 
 
