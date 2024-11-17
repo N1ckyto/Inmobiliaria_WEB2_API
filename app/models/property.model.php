@@ -9,7 +9,7 @@ class PropertyModel
         $this->db = new PDO('mysql:host=localhost;dbname=inmobiliaria_db;charset=utf8', 'root', '');
     }
 
-    public function getProperties($orderBy = false, $order = 'ASC', $filter = false, $valor = false)
+    public function getProperties($orderBy = false, $order = 'ASC', $filter = false, $valor = false, $page = 1, $limit = 10)
     {
         $campos_validos = ['id', 'ubicacion', 'm2', 'modalidad', 'id_propietario', 'precio_inicial', 'precio_flex', 'imagenes'];
 
@@ -25,6 +25,9 @@ class PropertyModel
         if (in_array($orderBy, $campos_validos)) {
             $sql .= ' ORDER BY ' . $orderBy . ' ' . $order;
         }
+
+        $offset = ($page - 1) * $limit;  
+        $sql .= ' LIMIT ' . $limit . ' OFFSET ' . $offset;
 
         $query = $this->db->prepare($sql);
         $query->execute($params);

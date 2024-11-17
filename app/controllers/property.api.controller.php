@@ -37,7 +37,10 @@ class PropertyApiController
             $valor = $req->query->valor;
         }
 
-        $properties = $this->model->getProperties($orderBy, $order, $filter, $valor);
+        $page = isset($req->query->page) ? (int) $req->query->page : 1;
+        $limit = isset($req->query->limit) ? (int) $req->query->limit : 10;
+
+        $properties = $this->model->getProperties($orderBy, $order, $filter, $valor, $page, $limit);
 
         return $this->view->response($properties, 200);
     }
