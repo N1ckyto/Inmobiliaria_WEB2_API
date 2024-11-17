@@ -39,6 +39,10 @@ class OwnerApiController
 
         $owners = $this->model->getOwners($orderBy, $order, $filter, $valor);
 
+        if(!$owners) {
+            return $this->view->response("No existe el o los propietarios que cumplan los requisitos", 404);
+        };
+
         return $this->view->response($owners, 200);
     }
 
