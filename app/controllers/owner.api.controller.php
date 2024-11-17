@@ -9,7 +9,7 @@ class OwnerApiController
 
     public function __construct()
     {
-        $this->model = new OwnerModel(); // Adaptado a OwnerModel
+        $this->model = new OwnerModel();
         $this->view = new JSONView();
     }
 
@@ -28,16 +28,20 @@ class OwnerApiController
         }
 
         $filter = false;
-        /* if (isset($req->query->filter)) {
-            $orderBy = $req->query->filter;
-        } */
+        if (isset($req->query->filter)) {
+            $filter = $req->query->filter;
+        }
 
-        $owners = $this->model->getOwners($orderBy, $order, $filter);
+        $valor = false;
+        if (isset($req->query->valor)) {
+            $valor = $req->query->valor;
+        }
+
+        $owners = $this->model->getOwners($orderBy, $order, $filter, $valor);
 
         return $this->view->response($owners, 200);
     }
 
-    // /api/propietarios/:id
     public function getOwner($req)
     {
         $id = $req->params->id;
@@ -61,9 +65,7 @@ class OwnerApiController
             return $this->view->response("El propietario con el id=$id no existe", 404);
         }
 
-        if (empty($req->body->nombre) || empty($req->body->apellido) || empty($req->body->imagen)) {
-            return $this->view->response('Faltan completar datos', 400);
-        }
+        $this->validateFields($req); // codigo reutilizado para validar los campos
 
         $nombre = $req->body->nombre;
         $apellido = $req->body->apellido;
@@ -77,6 +79,19 @@ class OwnerApiController
 
     public function addOwner($req)
     {
+        $this->validateFields($req); // codigo reutilizado para validar los campos
+
+        $nombre = $req->body->nombre;
+        $apellido = $req->body->apellido;
+        $imagen = $req->body->imagen;
+
+        $this->model->insertOwner($nombre, $apellido, $imagen);
+
+        return $this->view->response('Propietario creado exitosamente', 200);
+    }
+
+    private function validateFields($req)
+    {
         if (!isset($req->body->nombre) || empty($req->body->nombre)) {
             return $this->view->response('Falta completar el nombre', 400);
         }
@@ -86,13 +101,5 @@ class OwnerApiController
         if (!isset($req->body->imagen) || empty($req->body->imagen)) {
             return $this->view->response('Falta completar la imagen', 400);
         }
-
-        $nombre = $req->body->nombre;
-        $apellido = $req->body->apellido;
-        $imagen = $req->body->imagen;
-
-        $this->model->insertOwner($nombre, $apellido, $imagen);
-
-        return $this->view->response('Propietario creado', 200);
     }
 }

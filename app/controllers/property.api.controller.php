@@ -9,7 +9,7 @@ class PropertyApiController
 
     public function __construct()
     {
-        $this->model = new PropertyModel(); // Adaptado a PropertyModel
+        $this->model = new PropertyModel();
         $this->view = new JSONView();
     }
 
@@ -29,15 +29,19 @@ class PropertyApiController
 
         $filter = false;
         if (isset($req->query->filter)) {
-            $orderBy = $req->query->filter;
+            $filter = $req->query->filter;
         }
 
-        $properties = $this->model->getProperties($orderBy, $order, $filter);
+        $valor = false;
+        if (isset($req->query->valor)) {
+            $valor = $req->query->valor;
+        }
+
+        $properties = $this->model->getProperties($orderBy, $order, $filter, $valor);
 
         return $this->view->response($properties, 200);
     }
 
-    // /api/propiedades/:id
     public function getProperty($req)
     {
         $id = $req->params->id;
@@ -58,12 +62,10 @@ class PropertyApiController
         $properties = $this->model->getProperty($id);
 
         if (!$properties) {
-            return $this->view->response("La tarea con el id=$id no existe", 404);
+            return $this->view->response("La propiedad con el id=$id no existe", 404);
         }
 
-        if (empty($req->body->ubicacion) || empty($req->body->m2) || empty($req->body->modalidad) || empty($req->body->id_propietario) || empty($req->body->precio_inicial) || empty($req->body->precio_flex) || empty($req->body->imagen)) {
-            return $this->view->response('Faltan completar datos', 400);
-        }
+        $this->validateFields($req); // codigo reutilizado para validar los campos
 
         $ubicacion = $req->body->ubicacion;
         $m2 = $req->body->m2;
@@ -80,6 +82,24 @@ class PropertyApiController
     }
 
     public function addProperty($req)
+    {
+        $this->validateFields($req);
+
+        $ubicacion = $req->body->ubicacion;
+        $m2 = $req->body->m2;
+        $modalidad = $req->body->modalidad;
+        $precio_inicial = $req->body->precio_inicial;
+        $precio_flex = $req->body->precio_flex;
+        $id_propietario = $req->body->id_propietario;
+        $imagen = $req->body->imagen;
+
+
+        $this->model->insertProperty($ubicacion, $m2, $modalidad, $id_propietario, $precio_inicial, $precio_flex, $imagen);
+
+        return $this->view->response('Propiedad agregada con exito', 200);
+    }
+
+    private function validateFields($req)
     {
         if (!isset($req->body->ubicacion) || empty($req->body->ubicacion)) {
             return $this->view->response('Falta completar la ubicación', 400);
@@ -102,18 +122,5 @@ class PropertyApiController
         if (!isset($req->body->imagen) || empty($req->body->imagen)) {
             return $this->view->response('Falta completar la URL de la imagen', 400);
         }
-
-        $ubicacion = $req->body->ubicacion;
-        $m2 = $req->body->m2;
-        $modalidad = $req->body->modalidad;
-        $precio_inicial = $req->body->precio_inicial;
-        $precio_flex = isset($req->body->precio_flex) ? $req->body->precio_flex : 0;
-        $id_propietario = $req->body->id_propietario;
-        $imagen = $req->body->imagen;
-
-
-        $this->model->insertProperty($ubicacion, $m2, $modalidad, $id_propietario, $precio_inicial, $precio_flex, $imagen);
-
-        return $this->view->response('Propiedad agregada con exito', 200);
     }
 }

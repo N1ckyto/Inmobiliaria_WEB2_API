@@ -9,38 +9,37 @@ class OwnerModel
         $this->db = new PDO('mysql:host=localhost;dbname=inmobiliaria_db;charset=utf8', 'root', '');
     }
 
-    public function getOwners($orderBy = false, $order = 'ASC', $filter = false) // falta hacer que funcione el filtro
+    public function getOwners($orderBy = false, $order = 'ASC', $filter = false, $valor = false)
     {
-        $campos_validos = ['id', 'nombre', 'apellido']; // creo un arreglo con los datos validos
+        $campos_validos = ['id', 'nombre', 'apellido', 'imagen', 'cantidad_propiedades'];
 
-        $sql = 'SELECT * FROM propietarios';
+        $sql = 'SELECT p.id, p.nombre, p.apellido, p.imagen, COUNT(pr.id) AS cantidad_propiedades
+            FROM propietarios p
+            LEFT JOIN propiedades pr ON p.id = pr.id_propietario';
 
-        if (in_array($orderBy, $campos_validos)) {
-            $sql .= ' ORDER BY ' . $orderBy;
+        $order = strtoupper($order);
+        $params = [];
+
+        if ($filter === 'cantidad_propiedades' && is_numeric($valor)) {
+            $sql .= ' GROUP BY p.id, p.nombre, p.apellido, p.imagen HAVING cantidad_propiedades = ?';
+            $params[] = $valor;
+        } elseif (in_array($filter, $campos_validos) && $valor !== false) {
+            $sql .= ' WHERE ' . $filter . ' = ? GROUP BY p.id, p.nombre, p.apellido, p.imagen';
+            $params[] = $valor;
+        } else {
+            $sql .= ' GROUP BY p.id, p.nombre, p.apellido, p.imagen';
         }
 
-        if ($order) {
-            $order = strtoupper($order); //strtoupper convierte a mayuscula asc o desc
-            if ($order === 'DESC') {
-                $sql .= ' DESC';
-            } else {
-                $sql .= ' ASC';
-            }
+        if (in_array($orderBy, $campos_validos)) {
+            $sql .= ' ORDER BY ' . $orderBy . ' ' . $order;
         }
 
         $query = $this->db->prepare($sql);
-        $query->execute();
+        $query->execute($params);
 
-        // Obtiene los propietarios en un arreglo de objetos
         return $query->fetchAll(PDO::FETCH_OBJ);
     }
 
-    public function countPropertiesByOwner($id)
-    {
-        $query = $this->db->prepare('SELECT COUNT(*) AS total FROM propiedades WHERE id_propietario = ?');
-        $query->execute([$id]);
-        return $query->fetch(PDO::FETCH_OBJ)->total;
-    }
 
     public function insertOwner($nombre, $apellido, $imagen)
     {
@@ -49,23 +48,23 @@ class OwnerModel
         return $this->db->lastInsertId();
     }
 
-    // Obtener un propietario específico por ID
     public function getOwner($id)
     {
-        $query = $this->db->prepare('SELECT id,nombre, apellido, imagen FROM propietarios WHERE id = ?');
+        $query = $this->db->prepare('
+        SELECT p.id, p.nombre, p.apellido, p.imagen, COUNT(pr.id) AS cantidad_propiedades
+        FROM propietarios p
+        LEFT JOIN propiedades pr ON p.id = pr.id_propietario
+        WHERE p.id = ?
+        GROUP BY p.id, p.nombre, p.apellido, p.imagen
+    ');
         $query->execute([$id]);
         return $query->fetch(PDO::FETCH_OBJ);
     }
+
 
     public function updateOwner($id, $nombre, $apellido, $imagen)
     {
         $query = $this->db->prepare('UPDATE propietarios SET nombre = ?, apellido = ?, imagen = ? WHERE id = ?');
         $query->execute([$nombre, $apellido, $imagen, $id]);
-    }
-
-    public function deleteOwner($id)
-    {
-        $query = $this->db->prepare('DELETE FROM propietarios WHERE id = ?');
-        $query->execute([$id]);
     }
 }

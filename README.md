@@ -74,7 +74,17 @@ Este proyecto consiste en una base de datos para una inmobiliaria. El objetivo e
       ```http
       GET .../api/propiedades?orderBy=ubicacion&order=desc
       ```
+
+   - **Filtrado**:
+   - `filter`:  Especifica la columna en la que se aplicará el filtro.
+   - `valor`: Define el valor que se utilizará para filtrar los resultados en la columna seleccionada.
    
+   **Ejemplo de filtrado**:  
+      Para obtener todos las propiedades con la modalidad alquiler:
+
+      ```http
+      GET .../api/propiedades?filter=modalidad&order=alquiler
+      ```
 ---
 
 - **GET** `.../api/propiedades/:ID`  
@@ -110,6 +120,7 @@ Este proyecto consiste en una base de datos para una inmobiliaria. El objetivo e
 
 ---
 
+---
 ### Propietarios
 
 - **GET** `.../api/propietarios`  
@@ -120,7 +131,7 @@ Este proyecto consiste en una base de datos para una inmobiliaria. El objetivo e
     - **Ordenamiento**:
 
       - `orderBy`: Campo por el que se desea ordenar los resultados. Los campos válidos pueden incluir:
-propietarios
+      
         - `Id`: Ordena los propietarios por id.
           ```http
           GET .../api/propietarios?orderBy=id
@@ -143,6 +154,23 @@ propietarios
 
       ```http
       GET .../api/propietarios?orderBy=nombre&order=desc
+      ```
+
+   - **Filtrado**:
+   - `filter`:  Especifica la columna en la que se aplicará el filtro.
+   - `valor`: Define el valor que se utilizará para filtrar los resultados en la columna seleccionada.
+   
+   **Ejemplo de filtrado**:  
+      - Para obtener todos las propietarios segun su nombre:
+
+      ```http
+      GET .../api/propiedades?filter=nombre&order=facundo
+      ```
+
+      - Para obtener todos las propietarios segun su cantidad de propiedades:
+
+      ```http
+      GET .../api/propiedades?filter=cantidad_propiedades&valor=2
       ```
    
 ---
